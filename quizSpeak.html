@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Vocal Automatique</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 600px; 
+            margin: 50px auto; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        #question {
+            font-size: 24px;
+            margin: 20px 0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .reponse {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 80%;
+            transition: all 0.3s;
+        }
+        .reponse:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        #statut {
+            margin: 20px 0;
+            font-size: 18px;
+            min-height: 30px;
+        }
+        #progress {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        #progress-bar {
+            height: 100%;
+            background: #4CAF50;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        .highlight {
+            background: rgba(76, 175, 80, 0.5) !important;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎧 Quiz Vocal Automatique</h1>
+        
+        <div id="progress">
+            <div id="progress-bar"></div>
+        </div>
+        
+        <div id="statut">Le quiz va commencer automatiquement...</div>
+        
+        <div id="quiz">
+            <h2 id="question">Préparez-vous...</h2>
+            <div id="reponses">
+                <!-- Les réponses seront générées ici -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Quelle est la capitale de la France?",
+                reponses: ["Paris", "Londres", "Berlin", "Madrid"],
+                bonneReponse: 0
+            },
+            {
+                question: "Combien de continents y a-t-il sur Terre?",
+                reponses: ["5 continents", "6 continents", "7 continents", "8 continents"],
+                bonneReponse: 2
+            },
+            {
+                question: "Quel est l'océan le plus grand?",
+                reponses: ["L'océan Atlantique", "L'océan Indien", "L'océan Pacifique", "L'océan Arctique"],
+                bonneReponse: 2
+            },
+            {
+                question: "Qui a peint la Joconde?",
+                reponses: ["Vincent van Gogh", "Pablo Picasso", "Léonard de Vinci", "Michel-Ange"],
+                bonneReponse: 2
+            },
+            {
+                question: "Quelle est la planète la plus proche du Soleil?",
+                reponses: ["Vénus", "Mars", "Mercure", "Jupiter"],
+                bonneReponse: 2
+            }
+        ];
+
+        let questionActuelle = 0;
+        let quizEnCours = false;
+
+        // Démarrer automatiquement au chargement de la page
+        window.onload = function() {
+            setTimeout(() => {
+                demarrerQuiz();
+            }, 2000);
+        };
+
+        function demarrerQuiz() {
+            quizEnCours = true;
+            questionActuelle = 0;
+            mettreAJourProgression();
+            afficherQuestion();
+            
+            parler("Bienvenue au quiz vocal automatique. Le quiz va commencer.", () => {
+                setTimeout(() => {
+                    lireQuestionAutomatiquement();
+                }, 1000);
+            });
+        }
+
+        function afficherQuestion() {
+            const q = questions[questionActuelle];
+            document.getElementById('question').textContent = q.question;
+            document.getElementById('statut').textContent =` Question ${questionActuelle + 1} sur ${questions.length};`
+            
+            const reponsesDiv = document.getElementById('reponses');
+            reponsesDiv.innerHTML = '';
+            
+            q.reponses.forEach((reponse, index) => {
+                const btn = document.createElement('button');
+                btn.textContent = reponse;
+                btn.className = 'reponse';
+                btn.onclick = () => selectionnerReponse(index);
+                reponsesDiv.appendChild(btn);
+            });
+        }
+
+        function lireQuestionAutomatiquement() {
+            if (!quizEnCours) return;
+            
+            const q = questions[questionActuelle];
+            
+            // Lire la question
+            parler((`Question ${questionActuelle + 1}: ${q.question}`), () => {
+                // Mettre en évidence la question
+                document.getElementById('question').style.color = "#4CAF50";
+                
+                setTimeout(() => {
+                    // Lire les options une par une avec mise en évidence
+                    lireOptionsAvecSurbrillance(0);
+                }, 1500);
+            });
+        }
+
+        function lireOptionsAvecSurbrillance(index) {
+            const q = questions[questionActuelle];
+            const boutons = document.getElementsByClassName('reponse');
+            
+            if (index < q.reponses.length) {
+                // Remettre tous les boutons à la normale
+                for (let btn of boutons) {
+                    btn.classList.remove('highlight');
+                }
+                
+                // Mettre en évidence l'option actuelle
+                boutons[index].classList.add('highlight');
+                
+                parler(`Option ${index + 1}: ${q.reponses[index]}`, () => {
+                    setTimeout(() => {
+                        lireOptionsAvecSurbrillance(index + 1);
+                    }, 2000);
+                });
+            } else {
+                // Toutes les options ont été lues
+                setTimeout(() => {
+                    parler("Réfléchissez à votre réponse...", () => {
+                        setTimeout(() => {
+                            // Sélectionner automatiquement la bonne réponse après un délai
+                            selectionnerAutomatiquement();
+                        }, 4000);
+                    });
+                }, 1000);
+            }
+        }
+
+        function selectionnerAutomatiquement() {
+            const q = questions[questionActuelle];
+            
+            // Mettre en évidence la bonne réponse
+            const boutons = document.getElementsByClassName('reponse');
+            boutons[q.bonneReponse].classList.add('highlight');
+            
+            // Lire la réponse correcte
+            parler((`La bonne réponse est: ${q.reponses[q.bonneReponse]}`), () => {
+                setTimeout(() => {
+                    // Passer à la question suivante
+                    questionSuivante();
+                }, 2000);
+            });
+        }
+
+        function selectionnerReponse(index) {
+            // Fonction gardée au cas où l'utilisateur voudrait cliquer manuellement
+            const q = questions[questionActuelle];
+            const boutons = document.getElementsByClassName('reponse');
+            
+            // Mettre en évidence la réponse sélectionnée
+            for (let btn of boutons) {
+                btn.classList.remove('highlight');
+            }
+            boutons[index].classList.add('highlight');
+            
+            if (index === q.bonneReponse) {
+                parler("Correct! Excellente réponse!", () => {
+                    setTimeout(() => questionSuivante(), 1500);
+                });
+            } else {
+                parler((Incorrect,`La bonne réponse était: ${q.reponses[q.bonneReponse]}`), () => {
+                    setTimeout(() => questionSuivante(), 2500);
+                });
+            }
+        }
+
+        function questionSuivante() {
+            questionActuelle++;
+            mettreAJourProgression();
+            
+            if (questionActuelle < questions.length) {
+                // Remettre le style par défaut
+                document.getElementById('question').style.color = "white";
+                const boutons = document.getElementsByClassName('reponse');
+                for (let btn of boutons) {
+                    btn.classList.remove('highlight');
+                }
+                
+                afficherQuestion();
+                setTimeout(() => {
+                    lireQuestionAutomatiquement();
+                }, 1000);
+            } else {
+                finDuQuiz();
+            }
+        }
+
+        function finDuQuiz() {
+            quizEnCours = false;
+            document.getElementById('statut').textContent = "Quiz terminé!";
+            document.getElementById('question').textContent = "Félicitations! Vous avez terminé le quiz!";
+            document.getElementById('reponses').innerHTML = '';
+            mettreAJourProgression();
+            
+            parler("Félicitations! Vous avez terminé le quiz. Merci d'avoir participé!", () => {
+                setTimeout(() => {
+                    parler("Voulez-vous recommencer? Rechargez la page pour refaire le quiz.");
+                }, 2000);
+            });
+        }
+
+        function mettreAJourProgression() {
+            const progression = (questionActuelle / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = progression + '%';
+        }
+
+        function parler(texte, callback) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(texte);
+                utterance.lang = 'fr-FR';
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                
+                utterance.onend = function() {
+                    if (callback) setTimeout(callback, 500);
+                };
+                
+                utterance.onerror = function() {
+                    if (callback) setTimeout(callback, 500);
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.log("Synthèse vocale non supportée");
+                if (callback) setTimeout(callback, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
