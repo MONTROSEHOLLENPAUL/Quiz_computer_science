@@ -201,11 +201,6 @@ transform: translate(-50%, -50%);
 filter: drop-shadow(1px 2px 3px black);
 }
 
-/*.active{
-  background: #5660ec;
-  color: white;
-}*/
-
 .highlight {
             background: rgb(46, 46, 47, 0.43) !important;
             transform: scale(1.05);

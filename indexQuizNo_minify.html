@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz App (computer Science)</title>
+    <!--<link rel="stylesheet" href="./quizStyle.css">-->
+    <!--icon-->
+    <link
+      rel="icon"
+      type="image/png"
+      href="./favicon/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link rel="icon" type="image/svg+xml" href="./favicon/favicon.svg" />
+    <link rel="shortcut icon" href="./favicon/favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="./favicon/apple-touch-icon.png"
+    />
+    <meta name="apple-mobile-web-app-title" content="MyWebSite" />
+    <link rel="manifest" href="./favicon/site.webmanifest" />
+    <!--end-->
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #aaa6fffc;
+      }
+
+      .Container_body {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .app {
+        padding: 10px;
+        background: white;
+        border-radius: 6px;
+        min-width: 20rem;
+        min-height: 200px;
+        box-shadow: 1px 2px 3px 2px black;
+      }
+
+      .title {
+        text-align: center;
+        color: #6137ffb5;
+        text-transform: capitalize;
+        text-shadow: 1px 2px 3px #ff1800;
+        font-size: 3rem;
+        font-weight: bold;
+        text-wrap-mode: nowrap;
+      }
+
+      .icon {
+        font-size: 2.8rem;
+      }
+
+      .quizChoice {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 8px 0;
+      }
+
+      .quizChoice > * {
+        border: none;
+        outline: none;
+        font-size: 1.3rem;
+        padding: 10px 0;
+        background: #e1e1e1;
+        border-radius: 3px;
+        cursor: pointer;
+        text-transform: capitalize;
+      }
+
+      .quizChoice > *:hover {
+        background: #c4c8ff;
+        color: white;
+      }
+
+      .quizChoice label input:checked ~ .check {
+        color: rgb(7, 7, 7);
+      }
+
+      .buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin: 3px 0;
+      }
+
+      button {
+        border: none;
+        outline: none;
+        font-size: 1.2rem;
+        border-radius: 4px;
+        cursor: pointer;
+        color: white;
+        text-transform: uppercase;
+      }
+
+      .buttons button {
+        /*margin: 4px 0;*/
+        padding: 4px 6px;
+        min-width: 80px;
+      }
+
+      .buttons button.nextQuest {
+        display: none;
+      }
+
+      .buttons button:hover {
+        opacity: 0.5;
+      }
+      .buttons .startBtn {
+        background: #53ff53;
+      }
+
+      .quizChoice .Choice {
+        flex-grow: 1;
+        flex-basis: 150px;
+        text-align: center;
+        color: #a5a5a5;
+      }
+
+      .quest {
+        appearance: none;
+        -webkit-appearance: none;
+      }
+      /*----------------------*/
+      progress {
+        width: 100%;
+        margin-bottom: 5px;
+      }
+
+      h1,
+      h3,
+      p {
+        overflow-wrap: break-word;
+      }
+
+      .answers {
+        display: flex;
+        flex-direction: column;
+        margin: 10px 0;
+      }
+
+      .answers label {
+        padding: 12px;
+        display: block;
+        border: 2px solid #64748b;
+        border-radius: 4px;
+        margin: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        /*box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);*/
+        font-family: monospace;
+        font-size: 24px;
+        cursor: pointer;
+      }
+
+      .answers label:hover {
+        border-color: #646cff;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+        background: #ada7f9;
+      }
+
+      .btnSubmitAnsw {
+        display: inline-block;
+        outline: none;
+        cursor: pointer;
+        border-radius: 3px;
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 16px;
+        padding: 2px 16px;
+        height: 38px;
+        min-width: 96px;
+        width: 100%;
+        min-height: 38px;
+        border: none;
+        color: #fff;
+        background-color: rgb(122 255 118);
+        transition: background-color 0.17s ease, color 0.17sease;
+      }
+
+      .answers label input[name="answer"]:checked {
+        transform: scale(1.5);
+      }
+      .btn_next {
+        padding: 5px;
+        background: #8b8b8b;
+        min-width: 80px;
+      }
+
+      .correct {
+        background-color: #bbf7d0 !important;
+      }
+      .incorrect {
+        background-color: #fecaca !important;
+      }
+
+      p {
+        text-align: center;
+        font-size: 1.1rem;
+      }
+
+      img {
+        position: absolute;
+        z-index: 2;
+        top: -20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        filter: drop-shadow(1px 2px 3px black);
+      }
+
+      .highlight {
+        background: rgb(46, 46, 47, 0.43) !important;
+        transform: scale(1.05);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="Container_body">
+      <div class="msg"></div>
+      <div class="app">
+        <h1 class="title"><span class="icon">&#128187;</span>Quiz</h1>
+
+        <div class="interface">
+          <div class="quizChoice">
+            <label for="architecture" class="Choice">
+              <input
+                type="radio"
+                id="architecture"
+                class="quest"
+                name="quizd"
+              />
+              <span class="check">Architecture</span>
+            </label>
+
+            <label for="geometry" class="Choice">
+              <input type="radio" id="geometry" class="quest" name="quizd" />
+              <span class="check">Geometrie</span>
+            </label>
+
+            <label for="programmation" class="Choice">
+              <input
+                type="radio"
+                id="programmation"
+                class="quest"
+                name="quizd"
+              />
+              <span class="check">Programmation</span>
+            </label>
+
+            <label for="alger_bool" class="Choice">
+              <input type="radio" id="alger_bool" class="quest" name="quizd" />
+              <span class="check">Circuit Logique</span>
+            </label>
+
+            <label for="goat" class="Choice">
+              <input type="radio" id="goat" class="quest" name="quizd" />
+              <span class="check">Goat</span>
+            </label>
+          </div>
+
+          <div class="buttons">
+            <button class="startBtn">Start</button>
+            <!--<button class="nextQuest">Next</button>-->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--<script src="quizInfo.js"></script>-->
+    <script>
+      //-------------------DOM----------------
+      app = document.querySelector(".app");
+      quiz_Check = document.querySelectorAll(".quizChoice input[type=radio]");
+      //console.log(quiz_Check);
+
+      //variable
+      let currentQuestion = 0;
+      let score = 0;
+      let TIME_OUT = 4000;
+
+      /*------------------------------*/
+      function startQuiz(QUIZ) {
+        //currentQuestion = Math.floor(Math.random() * QUIZ.length);
+        currentQuestion = 0;
+
+        displayQuestion(QUIZ, currentQuestion);
+
+        function clean() {
+          while (app.firstElementChild) {
+            app.firstElementChild.remove();
+          }
+          const progress = getProgressBar(QUIZ.length, currentQuestion);
+          app.appendChild(progress);
+        }
+
+        function displayQuestion(QUIZ, index) {
+          clean();
+          const question = QUIZ[index];
+
+          if (!question) {
+            displayFinishMessage();
+            return;
+          }
+
+          const title = getTitleElement(question.question);
+          app.appendChild(title);
+          const answersDiv = createAnswers(question.answers);
+          app.appendChild(answersDiv);
+
+          const submitButton = getSubmitButton();
+          submitButton.classList.add("btnSubmitAnsw");
+
+          //submitButton.addEventListener("click", submit);
+          submitButton.onclick = () => {
+            submit(QUIZ);
+            //console.log("btn submit answer");
+          };
+
+          app.appendChild(submitButton);
+          readQuestionsAuto(QUIZ);
+        }
+
+        function submit(QUIZ) {
+          const selectedAnswer = app.querySelector(
+            'input[name="answer"]:checked'
+          );
+
+          if (selectedAnswer == null) {
+            alert("error: please select an answer");
+            return;
+          }
+
+          disableAllAnswers();
+
+          const value = selectedAnswer.value;
+          //errorr
+          //console.log(value);
+
+          const question = QUIZ[currentQuestion];
+          //console.log(question);
+
+          const isCorrect = question.correct === value;
+
+          if (isCorrect) {
+            score++;
+            //console.log("correct", score);
+          }
+
+          showFeedback(isCorrect, question.correct, value);
+          displayNextQuestionButton(() => {
+            currentQuestion++;
+            displayQuestion(QUIZ, currentQuestion);
+          });
+
+          removebcgVocal(QUIZ);
+
+          const feedback = getFeedbackMessage(isCorrect, question.correct);
+          app.appendChild(feedback);
+        }
+
+        function createAnswers(answers) {
+          const answersDiv = document.createElement("div");
+
+          answersDiv.classList.add("answers");
+
+          for (const answer of answers) {
+            const label = getAnswerElement(answer);
+            answersDiv.appendChild(label);
+          }
+
+          return answersDiv;
+        }
+
+        function displayFinishMessage() {
+          const quizSize = QUIZ.length;
+          const h1 = document.createElement("h1");
+          h1.innerText = "Bravo ! Tu as terminé le quiz.";
+          const p = document.createElement("p");
+          p.innerText = `Tu as eu ${score} / ${quizSize} points !`;
+          const moy = Math.floor(quizSize / 2);
+
+          if (score >= moy) {
+            //console.log("la moyenne", score);
+            good();
+          } else {
+            //console.log("desoler", score);
+            worst();
+          }
+
+          soundQuizFinish(score, moy);
+
+          app.appendChild(h1);
+          app.appendChild(p);
+
+          speak(
+            `Félicitations! Vous avez terminé le quiz avec une note de ${score} sur ${QUIZ.length}. Merci d'avoir participé!`,
+            () => {
+              setTimeout(() => {
+                speak(
+                  "Voulez-vous recommencer? Rechargez la page pour refaire le quiz."
+                );
+              }, 1000);
+            }
+          );
+        }
+
+        function good() {
+          // do this for 30 seconds
+          var duration = 30 * 1000;
+          var end = Date.now() + duration;
+
+          (function frame() {
+            // launch a few confetti from the left edge
+            confetti({
+              particleCount: 7,
+              angle: 60,
+              spread: 55,
+              origin: { x: 0 },
+            });
+            // and launch a few from the right edge
+            confetti({
+              particleCount: 7,
+              angle: 120,
+              spread: 55,
+              origin: { x: 1 },
+            });
+
+            // keep going until we are out of time
+            if (Date.now() < end) {
+              requestAnimationFrame(frame);
+            }
+          })();
+        }
+
+        function worst() {
+          const msg = document.querySelector(".msg");
+          const img = document.createElement("img");
+          img.src = `https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Pleading%20Face.png`;
+
+          msg.appendChild(img);
+        }
+
+        //--------------------------------------------------------
+      }
+
+      /*-------------------------------- */
+      function getTitleElement(text) {
+        const title = document.createElement("h3");
+        title.className = "Quest";
+        title.innerText = text;
+        return title;
+      }
+
+      function formatId(text) {
+        return text.replaceAll(" ", "-").replaceAll('"', "'").toLowerCase();
+      }
+
+      function getAnswerElement(text) {
+        const label = document.createElement("label");
+        label.innerText = text;
+        const input = document.createElement("input");
+        const id = formatId(text);
+        input.id = id;
+        label.htmlFor = id;
+        input.setAttribute("type", "radio");
+        input.setAttribute("name", "answer");
+        input.setAttribute("value", text);
+        label.appendChild(input);
+        label.className = "labels";
+        return label;
+      }
+
+      function getSubmitButton() {
+        const submitButton = document.createElement("button");
+        submitButton.innerText = "Submit";
+        return submitButton;
+      }
+
+      function getProgressBar(max, value) {
+        const progress = document.createElement("progress");
+        progress.setAttribute("max", max);
+        progress.setAttribute("value", value);
+        return progress;
+      }
+
+      function displayNextQuestionButton(callback) {
+        let remainingTimeout = TIME_OUT;
+
+        app.querySelector(".btnSubmitAnsw").remove();
+        const div = document.createElement("div");
+        div.classList.add("buttons");
+        app.appendChild(div);
+
+        const getButtonText = () => `Next (${remainingTimeout / 1000}s)`;
+
+        const nextButton = document.createElement("button");
+        nextButton.classList.add("btn_next");
+        nextButton.innerText = getButtonText();
+        div.appendChild(nextButton);
+
+        const interval = setInterval(() => {
+          remainingTimeout -= 1000;
+          nextButton.innerText = getButtonText();
+        }, 1000);
+
+        const timeout = setTimeout(() => {
+          handleNextQuestion();
+        }, TIME_OUT);
+
+        const handleNextQuestion = () => {
+          clearInterval(interval);
+          clearTimeout(timeout);
+          callback();
+        };
+
+        nextButton.addEventListener("click", () => {
+          handleNextQuestion();
+        });
+      }
+
+      function getFeedbackMessage(isCorrect, correct) {
+        const paragraph = document.createElement("p");
+        paragraph.innerText = isCorrect
+          ? "Bravo ! Tu as eu la bonne réponse"
+          : `Désolé... mais la bonne réponse était ${correct}`;
+
+        return paragraph;
+      }
+
+      function showFeedback(isCorrect, correct, answer) {
+        const correctAnswerId = formatId(correct);
+        const correctElement = document.querySelector(
+          `label[for="${correctAnswerId}"]`
+        );
+
+        const selectedAnswerId = formatId(answer);
+        const selectedElement = document.querySelector(
+          `label[for="${selectedAnswerId}"]`
+        );
+
+        correctElement.classList.add("correct");
+        selectedElement.classList.add(isCorrect ? "correct" : "incorrect");
+      }
+
+      function disableAllAnswers() {
+        const radioInputs = document.querySelectorAll('input[type="radio"]');
+
+        for (const radio of radioInputs) {
+          radio.disabled = true;
+        }
+      }
+
+      /* click function*/
+      window.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const clicked = e.target;
+        if (quiz_Check[0].checked && clicked.classList.contains("startBtn")) {
+          //alert("quiz architecture checked, but you can try");
+          startQuiz(quizChoice.architecture);
+        } else if (
+          quiz_Check[1].checked &&
+          clicked.classList.contains("startBtn")
+        ) {
+          //alert("quiz geometrie checked is not ready,but you can try");
+          startQuiz(quizChoice.geometrie);
+        } else if (
+          quiz_Check[2].checked &&
+          clicked.classList.contains("startBtn")
+        ) {
+          //alert("quiz programmation checked is not ready, but you can try");
+          startQuiz(quizChoice.programmation);
+        } else if (
+          quiz_Check[3].checked &&
+          clicked.classList.contains("startBtn")
+        ) {
+          //alert("quiz algebre de bool checked is not ready");
+          startQuiz(quizChoice.algebre_de_bool);
+        } else if (
+          quiz_Check[4].checked &&
+          clicked.classList.contains("startBtn")
+        ) {
+          startQuiz(quizChoice.goat_level);
+        }
+      });
+      /*-----------------------------------------------*/
+
+      function speak(text, callback) {
+        if ("speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+
+          let speech = new SpeechSynthesisUtterance(text);
+          speech.lang = "fr-FR";
+          speech.rate = 1.0;
+          speech.pitch = 1.5;
+
+          speech.onend = () => {
+            if (callback) setTimeout(callback, 500);
+          };
+
+          speech.onerror = () => {
+            if (callback) setTimeout(callback, 500);
+          };
+
+          window.speechSynthesis.speak(speech);
+        } else {
+          alert("ne supporte pas la synthese vocale");
+          if (callback) setTimeout(callback, 1000);
+        }
+      }
+
+      //read option
+      function readOptions(QUIZ, index) {
+        const qst = QUIZ[currentQuestion];
+        const label = document.querySelectorAll("label");
+        //console.log(`option:${qst.answers[index]}`);
+
+        if (index < qst.answers.length) {
+          for (let labels of label) {
+            labels.classList.remove("highlight");
+          }
+
+          label[index].classList.add("highlight");
+          speak(`Option ${index + 1}: ${qst.answers[index]}`, () => {
+            setTimeout(() => {
+              readOptions(QUIZ, index + 1);
+            }, 1500);
+          });
+        }
+      }
+
+      //read question
+      function readQuestionsAuto(QUIZ) {
+        const qst = QUIZ[currentQuestion];
+        //console.log(`Question:${qst.question}`);
+
+        speak(`Question ${currentQuestion + 1}: ${qst.question}`, () => {
+          setTimeout(() => {
+            readOptions(QUIZ, 0);
+          }, 500);
+        });
+      }
+
+      function removebcgVocal(QUIZ) {
+        const label = document.querySelectorAll("label");
+        if (currentQuestion < QUIZ.length) {
+          for (let labels of label) {
+            labels.classList.remove("highlight");
+          }
+        }
+      }
+
+      function soundQuizFinish(score, moy) {
+        let audio;
+        let volumeAud = 0.2;
+        let audioTriggerTime = TIME_OUT;
+        if (score >= moy) {
+          setTimeout(() => {
+            //console.log("song happy");
+            audio = new Audio();
+            audio.src = "audio/win.m4a";
+            audio.volume = volumeAud;
+            audio.play();
+          }, audioTriggerTime);
+        } else {
+          setTimeout(() => {
+            //console.log("song sad");
+            audio = new Audio();
+            audio.src = "audio/lose.m4a";
+            audio.volume = volumeAud;
+            audio.play();
+          }, audioTriggerTime);
+        }
+      }
+    </script>
+    <script src="./questionQuiz.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  </body>
+</html>
